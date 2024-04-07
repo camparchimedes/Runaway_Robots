@@ -1,6 +1,6 @@
 # TODO: review, and review again.
 # TODO: these weights are generic, mod them for an more interesting turn @def load_pipe_into_UNet(myUNet, pipe_unet):
-# TODO:Piping an XL model (XL might needs mods to attention, definitely other weights!)
+# TODO:Piping an XL model (XL probably needs mods to attention, definitely other weights!)
 """
 !pip install einops
 !pip install diffusers transformers tokenizers
