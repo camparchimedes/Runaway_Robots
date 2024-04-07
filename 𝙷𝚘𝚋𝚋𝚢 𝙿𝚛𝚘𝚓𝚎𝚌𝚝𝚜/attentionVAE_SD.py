@@ -1,4 +1,7 @@
-﻿"""
+# TODO: review, and review again.
+# TODO: these weights are generic, mod them for an more interesting turn @def load_pipe_into_UNet(myUNet, pipe_unet):
+# TODO:Piping an XL model (XL might needs mods to attention, definitely other weights!)
+"""
 !pip install einops
 !pip install diffusers transformers tokenizers
 !pip install - -upgrade diffusers
@@ -87,7 +90,7 @@ class DownSample(nn.Module):
         return self.conv(x)
 
 
-# Use VAE to modulate the attention weights and introduce a probabilistic element to the attention computation
+# Attempt to use VAE to affect attention weights/ make the attention computation probability-hinged
 class AttentionVAE(nn.Module):
     def __init__(self, embed_dim, hidden_dim, latent_dim, num_heads=8):
         super(AttentionVAE, self).__init__()
@@ -248,20 +251,13 @@ class SpatialTransformer(nn.Module):
         x = rearrange(x, 'b (h w) c -> b c h w', h=h, w=w)
         return self.proj_out(x) + x_in
 
-
 """
-https://github.com/huggingface/diffusers/blob/95414bd6bf9bb34a312a7c55f10ba9b379f33890/src/diffusers/models/attention.py#L339
-A variant of the gated linear unit activation function from https://arxiv.org/abs/2002.05202.
-"""
-
-"""
-
      self.ff = nn.Sequential(
          nn.Linear(hidden_dim, 3 * hidden_dim),
          nn.GELU(),
          nn.Linear(3 * hidden_dim, hidden_dim)
      )
-
+     
     """
 
 # Container of ResBlock and Spatial Transformers
@@ -388,26 +384,15 @@ class UNet_SD(nn.Module):
         else:
             return x
 
-
 pipe = AutoPipelineForText2Image.from_pretrained(
     'lykon/dreamshaper-xl-lightning', torch_dtype=torch.float16, variant="fp16").to("cuda")
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 
-# Disable safety
-
-
+# Safety dummy
 def dummy_checker(images, **kwargs): return images, False
-
-
 pipe.safety_checker = dummy_checker
 
-"""
-pipe = StableDiffusionpipeline.from_pretrained(
-    "runwayml/stable-diffusion-v1-5").to("cuda")
-"""
-# Run a prelim_test with the AttentionVAE
-
-
+# Standard v1.5 (see: TODO)
 def load_pipe_into_UNet(myUNet, pipe_unet):
     # load the pretrained weights from the pipe into UNet.
     # Loading input and output layers.
@@ -462,7 +447,7 @@ def load_pipe_into_UNet(myUNet, pipe_unet):
         pipe_unet.mid_block.attentions[0].state_dict())
     myUNet.mid_block[2].load_state_dict(
         pipe_unet.mid_block.resnets[1].state_dict())
-    # # Loading the up blocks
+    # Loading the up blocks /
     # upblock 0
     myUNet.up_blocks[0][0].load_state_dict(
         pipe_unet.up_blocks[0].resnets[0].state_dict())
@@ -523,6 +508,8 @@ load_pipe_into_UNet(myunet, original_unet)
 
 pipe.unet = myunet.cuda()
 
+
+# Begin prelim_test with the AttentionVAE, using the 
 prompt = "masterly piece, load the pretrained weights from the pipe into my UNet, CG Art"
 with autocast("cuda"):
     output = pipe(prompt)
