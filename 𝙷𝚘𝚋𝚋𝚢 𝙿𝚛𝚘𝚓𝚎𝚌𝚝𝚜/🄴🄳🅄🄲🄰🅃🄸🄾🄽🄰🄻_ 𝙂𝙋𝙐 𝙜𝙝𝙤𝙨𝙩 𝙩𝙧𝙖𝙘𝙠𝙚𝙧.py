@@ -1,4 +1,4 @@
-﻿﻿# @markdown 🄴🄳🅄🄲🄰🅃🄸🄾🄽🄰🄻: 𝙂𝙋𝙐 𝙜𝙝𝙤𝙨𝙩 𝙩𝙧𝙖𝙘𝙠𝙚𝙧
+﻿﻿# @markdown 🄴🄳🅄🄲🄰🅃🄸🄾🄽🄰🄻: 𝙂𝙋𝙐 ghost 𝙩𝙧𝙖𝙘𝙠𝙚𝙧
 import time
 import math
 from IPython.display import display, Javascript
